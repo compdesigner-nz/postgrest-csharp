@@ -99,7 +99,7 @@ namespace Supabase.Postgrest
         }
 
         /// <inheritdoc />
-        public Table<TModel> Filter<TCriterion>(Expression<Func<TModel, object>> predicate, Constants.Operator op,
+        public IPostgrestTable<TModel> Filter<TCriterion>(Expression<Func<TModel, object>> predicate, Constants.Operator op,
             TCriterion? criterion)
         {
             var visitor = new SelectExpressionVisitor();
@@ -115,7 +115,7 @@ namespace Supabase.Postgrest
         }
 
         /// <inheritdoc />
-        public Table<TModel> Filter<TCriterion>(string columnName, Constants.Operator op, TCriterion? criterion)
+        public IPostgrestTable<TModel> Filter<TCriterion>(string columnName, Constants.Operator op, TCriterion? criterion)
         {
             switch (criterion)
             {
@@ -169,18 +169,18 @@ namespace Supabase.Postgrest
         }
 
         /// <inheritdoc />
-        public Table<TModel> Not(IPostgrestQueryFilter filter)
+        public IPostgrestTable<TModel> Not(IPostgrestQueryFilter filter)
         {
             _filters.Add(new QueryFilter(Constants.Operator.Not, filter));
             return this;
         }
 
         /// <inheritdoc />
-        public Table<TModel> Not<TCriterion>(string columnName, Constants.Operator op, TCriterion? criterion) =>
+        public IPostgrestTable<TModel> Not<TCriterion>(string columnName, Constants.Operator op, TCriterion? criterion) =>
             Not(new QueryFilter(columnName, op, criterion));
 
         /// <inheritdoc />
-        public Table<TModel> Not<TCriterion>(Expression<Func<TModel, object>> predicate, Constants.Operator op,
+        public IPostgrestTable<TModel> Not<TCriterion>(Expression<Func<TModel, object>> predicate, Constants.Operator op,
             TCriterion? criterion)
         {
             var visitor = new SelectExpressionVisitor();
@@ -196,11 +196,11 @@ namespace Supabase.Postgrest
         }
 
         /// <inheritdoc />
-        public Table<TModel> Not<TCriterion>(string columnName, Constants.Operator op, List<TCriterion> criteria) =>
+        public IPostgrestTable<TModel> Not<TCriterion>(string columnName, Constants.Operator op, List<TCriterion> criteria) =>
             Not(new QueryFilter(columnName, op, criteria.Cast<object>().ToList()));
 
         /// <inheritdoc />
-        public Table<TModel> Not<TCriterion>(Expression<Func<TModel, object>> predicate, Constants.Operator op,
+        public IPostgrestTable<TModel> Not<TCriterion>(Expression<Func<TModel, object>> predicate, Constants.Operator op,
             List<TCriterion> criteria)
         {
             var visitor = new SelectExpressionVisitor();
@@ -216,11 +216,11 @@ namespace Supabase.Postgrest
         }
 
         /// <inheritdoc />
-        public Table<TModel> Not(string columnName, Constants.Operator op, Dictionary<string, object> criteria) =>
+        public IPostgrestTable<TModel> Not(string columnName, Constants.Operator op, Dictionary<string, object> criteria) =>
             Not(new QueryFilter(columnName, op, criteria));
 
         /// <inheritdoc />
-        public Table<TModel> Not(Expression<Func<TModel, object>> predicate, Constants.Operator op,
+        public IPostgrestTable<TModel> Not(Expression<Func<TModel, object>> predicate, Constants.Operator op,
             Dictionary<string, object> criteria)
         {
             var visitor = new SelectExpressionVisitor();
@@ -237,21 +237,21 @@ namespace Supabase.Postgrest
 
 
         /// <inheritdoc />
-        public Table<TModel> And(List<IPostgrestQueryFilter> filters)
+        public IPostgrestTable<TModel> And(List<IPostgrestQueryFilter> filters)
         {
             _filters.Add(new QueryFilter(Constants.Operator.And, filters));
             return this;
         }
 
         /// <inheritdoc />
-        public Table<TModel> Or(List<IPostgrestQueryFilter> filters)
+        public IPostgrestTable<TModel> Or(List<IPostgrestQueryFilter> filters)
         {
             _filters.Add(new QueryFilter(Constants.Operator.Or, filters));
             return this;
         }
 
         /// <inheritdoc />
-        public Table<TModel> Match(TModel model)
+        public IPostgrestTable<TModel> Match(TModel model)
         {
             foreach (var kvp in model.PrimaryKey)
             {
@@ -262,7 +262,7 @@ namespace Supabase.Postgrest
         }
 
         /// <inheritdoc />
-        public Table<TModel> Match(Dictionary<string, string> query)
+        public IPostgrestTable<TModel> Match(Dictionary<string, string> query)
         {
             foreach (var param in query)
             {
@@ -273,7 +273,7 @@ namespace Supabase.Postgrest
         }
 
         /// <inheritdoc />
-        public Table<TModel> Order(Expression<Func<TModel, object>> predicate, Constants.Ordering ordering,
+        public IPostgrestTable<TModel> Order(Expression<Func<TModel, object>> predicate, Constants.Ordering ordering,
             Constants.NullPosition nullPosition = Constants.NullPosition.First)
         {
             var visitor = new SelectExpressionVisitor();
@@ -290,14 +290,14 @@ namespace Supabase.Postgrest
 
 
         /// <inheritdoc />
-        public Table<TModel> Order(string column, Constants.Ordering ordering, Constants.NullPosition nullPosition = Constants.NullPosition.First)
+        public IPostgrestTable<TModel> Order(string column, Constants.Ordering ordering, Constants.NullPosition nullPosition = Constants.NullPosition.First)
         {
             _orderers.Add(new QueryOrderer(null, column, ordering, nullPosition));
             return this;
         }
 
         /// <inheritdoc />
-        public Table<TModel> Order(string foreignTable, string column, Constants.Ordering ordering,
+        public IPostgrestTable<TModel> Order(string foreignTable, string column, Constants.Ordering ordering,
             Constants.NullPosition nullPosition = Constants.NullPosition.First)
         {
             _orderers.Add(new QueryOrderer(foreignTable, column, ordering, nullPosition));
@@ -305,14 +305,14 @@ namespace Supabase.Postgrest
         }
 
         /// <inheritdoc />
-        public Table<TModel> Range(int from)
+        public IPostgrestTable<TModel> Range(int from)
         {
             _rangeFrom = from;
             return this;
         }
 
         /// <inheritdoc />
-        public Table<TModel> Range(int from, int to)
+        public IPostgrestTable<TModel> Range(int from, int to)
         {
             _rangeFrom = from;
             _rangeTo = to;
@@ -320,7 +320,7 @@ namespace Supabase.Postgrest
         }
 
         /// <inheritdoc />
-        public Table<TModel> Select(string columnQuery)
+        public IPostgrestTable<TModel> Select(string columnQuery)
         {
             _method = HttpMethod.Get;
             _columnQuery = columnQuery;
@@ -328,7 +328,7 @@ namespace Supabase.Postgrest
         }
 
         /// <inheritdoc />
-        public Table<TModel> Select(Expression<Func<TModel, object[]>> predicate)
+        public IPostgrestTable<TModel> Select(Expression<Func<TModel, object[]>> predicate)
         {
             var visitor = new SelectExpressionVisitor();
             visitor.Visit(predicate);
@@ -341,7 +341,7 @@ namespace Supabase.Postgrest
         }
 
         /// <inheritdoc />
-        public Table<TModel> Where(Expression<Func<TModel, bool>> predicate)
+        public IPostgrestTable<TModel> Where(Expression<Func<TModel, bool>> predicate)
         {
             var visitor = new WhereExpressionVisitor();
             visitor.Visit(predicate);
@@ -363,7 +363,7 @@ namespace Supabase.Postgrest
 
 
         /// <inheritdoc />
-        public Table<TModel> Limit(int limit, string? foreignTableName = null)
+        public IPostgrestTable<TModel> Limit(int limit, string? foreignTableName = null)
         {
             _limit = limit;
             _limitForeignKey = foreignTableName;
@@ -372,14 +372,14 @@ namespace Supabase.Postgrest
 
 
         /// <inheritdoc />
-        public Table<TModel> OnConflict(string columnName)
+        public IPostgrestTable<TModel> OnConflict(string columnName)
         {
             _onConflict = columnName;
             return this;
         }
 
         /// <inheritdoc />
-        public Table<TModel> OnConflict(Expression<Func<TModel, object>> predicate)
+        public IPostgrestTable<TModel> OnConflict(Expression<Func<TModel, object>> predicate)
         {
             var visitor = new SelectExpressionVisitor();
             visitor.Visit(predicate);
@@ -397,7 +397,7 @@ namespace Supabase.Postgrest
 
 
         /// <inheritdoc />
-        public Table<TModel> Columns(string[] columns)
+        public IPostgrestTable<TModel> Columns(string[] columns)
         {
             foreach (var column in columns)
                 _columns.Add(column);
@@ -407,7 +407,7 @@ namespace Supabase.Postgrest
 
 
         /// <inheritdoc />
-        public Table<TModel> Columns(Expression<Func<TModel, object[]>> predicate)
+        public IPostgrestTable<TModel> Columns(Expression<Func<TModel, object[]>> predicate)
         {
             var visitor = new SelectExpressionVisitor();
             visitor.Visit(predicate);
@@ -420,7 +420,7 @@ namespace Supabase.Postgrest
 
 
         /// <inheritdoc />
-        public Table<TModel> Offset(int offset, string? foreignTableName = null)
+        public IPostgrestTable<TModel> Offset(int offset, string? foreignTableName = null)
         {
             _offset = offset;
             _offsetForeignKey = foreignTableName;
@@ -465,7 +465,7 @@ namespace Supabase.Postgrest
 
 
         /// <inheritdoc />
-        public Table<TModel> Set(Expression<Func<TModel, object>> keySelector, object? value)
+        public IPostgrestTable<TModel> Set(Expression<Func<TModel, object>> keySelector, object? value)
         {
             var visitor = new SetExpressionVisitor();
             visitor.Visit(keySelector);
@@ -493,7 +493,7 @@ namespace Supabase.Postgrest
 
 
         /// <inheritdoc />
-        public Table<TModel> Set(Expression<Func<TModel, KeyValuePair<object, object?>>> keyValuePairExpression)
+        public IPostgrestTable<TModel> Set(Expression<Func<TModel, KeyValuePair<object, object?>>> keyValuePairExpression)
         {
             var visitor = new SetExpressionVisitor();
             visitor.Visit(keyValuePairExpression);
